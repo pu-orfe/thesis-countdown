@@ -29,6 +29,7 @@
       --color-neutral-85: #333;
       --color-neutral-60: #717171;
       --color-neutral-40: #a0a0a0;
+      --color-neutral-100: #121212;
       --font-display: 'Libre Franklin', sans-serif;
       --font-body: 'Lora', serif;
     }
@@ -36,8 +37,8 @@
     html, body {
       height: 100%;
       overflow: hidden;
-      background: var(--color-black);
-      color: var(--color-white);
+      background: var(--color-brand-10);
+      color: var(--color-neutral-100);
       font-family: var(--font-display);
     }
 
@@ -50,11 +51,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(
-        180deg,
-        var(--color-black) 0%,
-        #0a0a0a 100%
-      );
+      background: var(--color-brand-10);
     }
 
     .countdown-inner {
@@ -91,7 +88,7 @@
       font-weight: 600;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--color-brand-60);
+      color: var(--color-brand-70);
       margin-bottom: 0.25rem;
     }
 
@@ -99,14 +96,14 @@
       font-family: var(--font-body);
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--color-white);
+      color: var(--color-neutral-100);
       line-height: 1.2;
     }
 
     .label-due {
       font-size: 0.7rem;
       font-weight: 400;
-      color: var(--color-neutral-40);
+      color: var(--color-neutral-60);
       margin-top: 0.35rem;
       letter-spacing: 0.05em;
     }
@@ -143,7 +140,7 @@
     .segment-value {
       font-size: 4rem;
       font-weight: 800;
-      color: var(--color-white);
+      color: var(--color-neutral-100);
       font-variant-numeric: tabular-nums;
       line-height: 1;
       min-width: 1.5ch;
@@ -153,7 +150,7 @@
     .segment-unit {
       font-size: 0.85rem;
       font-weight: 600;
-      color: var(--color-brand-60);
+      color: var(--color-brand-80);
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-right: 1rem;
@@ -162,7 +159,7 @@
     .separator {
       font-size: 3rem;
       font-weight: 300;
-      color: var(--color-neutral-60);
+      color: var(--color-neutral-40);
       margin: 0 0.15rem;
       align-self: center;
       line-height: 1;
@@ -192,14 +189,14 @@
       font-family: var(--font-body);
       font-size: 3.5rem;
       font-weight: 700;
-      color: var(--color-white);
+      color: var(--color-neutral-100);
       animation: doneIn 0.8s ease;
     }
 
     .done-sub {
       font-size: 1rem;
       font-weight: 600;
-      color: var(--color-brand-60);
+      color: var(--color-brand-70);
       letter-spacing: 0.15em;
       text-transform: uppercase;
       margin-top: 0.5rem;
@@ -223,7 +220,7 @@
     }
 
     @keyframes urgentPulse {
-      0%, 100% { color: var(--color-white); }
+      0%, 100% { color: var(--color-neutral-100); }
       50% { color: var(--color-brand-70); }
     }
 
@@ -447,7 +444,7 @@
       const end = Date.now() + duration;
 
       // Princeton orange + white + gold confetti
-      const colors = ['#e77500', '#F7964A', '#ffffff', '#FFD700', '#C1560E'];
+      const colors = ['#e77500', '#F7964A', '#121212', '#FFD700', '#C1560E', '#411C02'];
 
       function frame() {
         confetti({
