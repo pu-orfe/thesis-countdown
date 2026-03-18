@@ -1,6 +1,8 @@
 # Thesis Countdown
 
-A countdown timer for the ORFE senior thesis deadline, styled after the [Princeton ORFE](https://orfe.princeton.edu) department site. Designed to be projected onto a wall via a mini projector connected to Apple TV.
+A countdown timer for the ORFE senior thesis deadline, styled after the [ORFE](https://orfe.princeton.edu) site.
+
+Designed to be projected onto a wall via a mini projector connected to Apple TV.
 
 **Live:** [pu-orfe.github.io/thesis-countdown](https://pu-orfe.github.io/thesis-countdown/)
 
