@@ -288,6 +288,7 @@
     const title = params.get('title') || 'Senior Thesis';
     const endMessage = params.get('end') || 'You Did It!';
     const endSub = params.get('endsub') || 'Thesis Complete';
+    const confettiDuration = parseInt(params.get('confetti') || '8', 10);
 
     // Parse the due date in the specified timezone
     function parseDueDate(isoStr, tz) {
@@ -444,10 +445,11 @@
 
     // Confetti celebration
     function launchConfetti() {
-      const duration = 8000;
-      const end = Date.now() + duration;
+      const continuous = confettiDuration === 0;
+      const durationMs = continuous ? Infinity : confettiDuration * 1000;
+      const end = Date.now() + durationMs;
 
-      // Princeton orange + white + gold confetti
+      // Princeton orange + gold + dark confetti
       const colors = ['#e77500', '#F7964A', '#121212', '#FFD700', '#C1560E', '#411C02'];
 
       function frame() {
@@ -466,7 +468,7 @@
           colors: colors,
         });
 
-        if (Date.now() < end) {
+        if (continuous || Date.now() < end) {
           requestAnimationFrame(frame);
         }
       }
@@ -484,33 +486,42 @@
       frame();
 
       // Additional bursts
-      setTimeout(() => {
-        confetti({
-          particleCount: 80,
-          spread: 120,
-          origin: { x: 0.3, y: 0.6 },
-          colors: colors,
-        });
-      }, 1500);
+      function scheduleBursts() {
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            spread: 120,
+            origin: { x: 0.3, y: 0.6 },
+            colors: colors,
+          });
+        }, 1500);
 
-      setTimeout(() => {
-        confetti({
-          particleCount: 80,
-          spread: 120,
-          origin: { x: 0.7, y: 0.6 },
-          colors: colors,
-        });
-      }, 3000);
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            spread: 120,
+            origin: { x: 0.7, y: 0.6 },
+            colors: colors,
+          });
+        }, 3000);
 
-      setTimeout(() => {
-        confetti({
-          particleCount: 100,
-          spread: 160,
-          origin: { x: 0.5, y: 0.5 },
-          colors: colors,
-          startVelocity: 30,
-        });
-      }, 5000);
+        setTimeout(() => {
+          confetti({
+            particleCount: 100,
+            spread: 160,
+            origin: { x: 0.5, y: 0.5 },
+            colors: colors,
+            startVelocity: 30,
+          });
+        }, 5000);
+      }
+
+      scheduleBursts();
+
+      // In continuous mode, repeat the burst cycle every 8 seconds
+      if (continuous) {
+        setInterval(scheduleBursts, 8000);
+      }
     }
 
     // Run immediately, then every second

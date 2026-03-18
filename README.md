@@ -26,6 +26,7 @@ The deadline, title, and timezone are configurable via URL query parameters:
 | `tz` | `America/New_York` | IANA timezone for the deadline |
 | `end` | `You Did It!` | Message displayed when the countdown reaches zero |
 | `endsub` | `Thesis Complete` | Subtext displayed below the end message |
+| `confetti` | `8` | Confetti duration in seconds; `0` for continuous |
 
 ### Examples
 
@@ -35,6 +36,9 @@ https://pu-orfe.github.io/thesis-countdown/
 
 # Custom deadline and title
 https://pu-orfe.github.io/thesis-countdown/?due=2026-05-01T23:59&title=Dissertation&tz=America/Chicago
+
+# Custom end message with continuous confetti
+https://pu-orfe.github.io/thesis-countdown/?end=We%20Made%20It!&endsub=Go%20Celebrate&confetti=0
 ```
 
 ## Projection Setup
