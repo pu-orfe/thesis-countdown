@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thesis Countdown</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-brand-100: #411C02;
+      --color-brand-90: #6D2E03;
+      --color-brand-80: #C1560E;
+      --color-brand-70: #e77500;
+      --color-brand-60: #F7964A;
+      --color-brand-20: #FEECDE;
+      --color-brand-10: #FFF7F2;
+      --color-black: #000;
+      --color-bg: #121212;
+      --color-white: #fff;
+      --color-neutral-85: #333;
+      --color-neutral-60: #717171;
+      --color-neutral-40: #a0a0a0;
+      --font-display: 'Libre Franklin', sans-serif;
+      --font-body: 'Lora', serif;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--color-black);
+      color: var(--color-white);
+      font-family: var(--font-display);
+    }
+
+    .countdown-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(
+        180deg,
+        var(--color-black) 0%,
+        #0a0a0a 100%
+      );
+    }
+
+    .countdown-inner {
+      width: 100%;
+      max-width: 1600px;
+      padding: 0 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .brand-strip {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(
+        90deg,
+        var(--color-brand-70) 0%,
+        var(--color-brand-60) 50%,
+        var(--color-brand-70) 100%
+      );
+      z-index: 10;
+    }
+
+    .label-section {
+      flex-shrink: 0;
+    }
+
+    .label-pre {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-brand-60);
+      margin-bottom: 0.25rem;
+    }
+
+    .label-title {
+      font-family: var(--font-body);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-white);
+      line-height: 1.2;
+    }
+
+    .label-due {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: var(--color-neutral-40);
+      margin-top: 0.35rem;
+      letter-spacing: 0.05em;
+    }
+
+    .countdown-display {
+      display: flex;
+      align-items: baseline;
+      gap: 0.25rem;
+      flex-wrap: nowrap;
+    }
+
+    .countdown-segment {
+      display: flex;
+      align-items: baseline;
+      gap: 0.15rem;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: segmentIn 0.5s ease forwards;
+    }
+
+    .countdown-segment:nth-child(1) { animation-delay: 0.1s; }
+    .countdown-segment:nth-child(2) { animation-delay: 0.2s; }
+    .countdown-segment:nth-child(3) { animation-delay: 0.3s; }
+    .countdown-segment:nth-child(4) { animation-delay: 0.4s; }
+    .countdown-segment:nth-child(5) { animation-delay: 0.5s; }
+
+    @keyframes segmentIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .segment-value {
+      font-size: 4rem;
+      font-weight: 800;
+      color: var(--color-white);
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      min-width: 1.5ch;
+      text-align: right;
+    }
+
+    .segment-unit {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--color-brand-60);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-right: 1rem;
+    }
+
+    .separator {
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--color-neutral-60);
+      margin: 0 0.15rem;
+      align-self: center;
+      line-height: 1;
+    }
+
+    /* Completed state */
+    .countdown-banner.completed .segment-value {
+      color: var(--color-brand-70);
+    }
+
+    .done-message {
+      display: none;
+      text-align: center;
+      width: 100%;
+    }
+
+    .countdown-banner.completed .done-message {
+      display: block;
+    }
+
+    .countdown-banner.completed .countdown-display,
+    .countdown-banner.completed .label-section {
+      display: none;
+    }
+
+    .done-text {
+      font-family: var(--font-body);
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--color-white);
+      animation: doneIn 0.8s ease;
+    }
+
+    .done-sub {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-brand-60);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+      animation: doneIn 0.8s ease 0.3s both;
+    }
+
+    @keyframes doneIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Urgency pulse when under 1 hour */
+    .countdown-banner.urgent .segment-value {
+      animation: urgentPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes urgentPulse {
+      0%, 100% { color: var(--color-white); }
+      50% { color: var(--color-brand-70); }
+    }
+
+    /* Confetti canvas */
+    canvas.confetti-canvas {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100% !important;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .segment-value { font-size: 3rem; }
+      .separator { font-size: 2.2rem; }
+      .label-title { font-size: 1.2rem; }
+    }
+
+    @media (max-width: 768px) {
+      .countdown-inner {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        padding: 0 1.5rem;
+      }
+      .segment-value { font-size: 2.5rem; }
+      .segment-unit { font-size: 0.7rem; margin-right: 0.6rem; }
+      .separator { font-size: 1.8rem; }
+      .done-text { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="brand-strip"></div>
+  <div class="countdown-banner" id="banner">
+    <div class="countdown-inner">
+      <div class="label-section">
+        <div class="label-pre">Thesis Due</div>
+        <div class="label-title" id="titleText">Senior Thesis</div>
+        <div class="label-due" id="dueDate"></div>
+      </div>
+      <div class="countdown-display" id="countdown"></div>
+      <div class="done-message">
+        <div class="done-text">Submitted!</div>
+        <div class="done-sub">Thesis turned in</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration via URL parameters:
+    //   ?due=2026-04-14T17:00   ISO date-time of the deadline
+    //   ?title=Senior%20Thesis  Label text
+    //   ?tz=America/New_York    IANA timezone for the deadline
+    //
+    // Defaults to April 14, 2026 at 5:00 PM Eastern if no params given.
+
+    const params = new URLSearchParams(window.location.search);
+
+    const tzName = params.get('tz') || 'America/New_York';
+    const dueParam = params.get('due') || '2026-04-09T16:30';
+    const title = params.get('title') || 'Senior Thesis';
+
+    // Parse the due date in the specified timezone
+    function parseDueDate(isoStr, tz) {
+      // Build a date string that JavaScript can parse in the given timezone
+      const dateStr = isoStr.replace('T', ' ');
+      // Create a formatter that outputs in the target timezone
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false,
+      });
+
+      // We need to find the UTC time that corresponds to the given local time.
+      // Start with a naive parse and iteratively adjust.
+      const parts = isoStr.split(/[-T:]/);
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]) - 1;
+      const day = parseInt(parts[2]);
+      const hour = parseInt(parts[3]) || 0;
+      const minute = parseInt(parts[4]) || 0;
+
+      // Create a guess in UTC
+      let guess = new Date(Date.UTC(year, month, day, hour, minute, 0));
+
+      // Get what that guess looks like in the target timezone
+      for (let i = 0; i < 3; i++) {
+        const inTZ = new Date(guess.toLocaleString('en-US', { timeZone: tz }));
+        const target = new Date(year, month, day, hour, minute, 0);
+        const diff = target - inTZ;
+        guess = new Date(guess.getTime() + diff);
+      }
+
+      return guess;
+    }
+
+    const dueDate = parseDueDate(dueParam, tzName);
+
+    // Set up labels
+    document.getElementById('titleText').textContent = title;
+    document.getElementById('dueDate').textContent =
+      dueDate.toLocaleString('en-US', {
+        timeZone: tzName,
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZoneName: 'short',
+      });
+
+    const countdownEl = document.getElementById('countdown');
+    const bannerEl = document.getElementById('banner');
+    let hasCompleted = false;
+
+    function createSegment(value, unit) {
+      return `<div class="countdown-segment">
+        <span class="segment-value">${value}</span>
+        <span class="segment-unit">${unit}</span>
+      </div>`;
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      let diff = dueDate - now;
+
+      if (diff <= 0 && !hasCompleted) {
+        hasCompleted = true;
+        bannerEl.classList.add('completed');
+        bannerEl.classList.remove('urgent');
+        countdownEl.innerHTML = '';
+        launchConfetti();
+        return;
+      }
+
+      if (hasCompleted) return;
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const totalHours = Math.floor(totalMinutes / 60);
+      const totalDays = Math.floor(totalHours / 24);
+      const totalWeeks = Math.floor(totalDays / 7);
+
+      const seconds = totalSeconds % 60;
+      const minutes = totalMinutes % 60;
+      const hours = totalHours % 24;
+      const days = totalDays % 7;
+      const weeks = totalWeeks;
+
+      let html = '';
+
+      // Adaptive display based on closeness:
+      // > 7 days:    Weeks  Days
+      // 1-7 days:    Days  Hours
+      // 1-24 hours:  Hours  Minutes
+      // < 1 hour:    Minutes  Seconds
+
+      if (totalDays > 7) {
+        // Weeks and days
+        html += createSegment(weeks, weeks === 1 ? 'week' : 'weeks');
+        html += createSegment(days, days === 1 ? 'day' : 'days');
+        // Also show hours for context
+        html += createSegment(hours, hours === 1 ? 'hr' : 'hrs');
+        bannerEl.classList.remove('urgent');
+      } else if (totalHours >= 24) {
+        // Days and hours
+        html += createSegment(totalDays, totalDays === 1 ? 'day' : 'days');
+        html += createSegment(hours, hours === 1 ? 'hr' : 'hrs');
+        bannerEl.classList.remove('urgent');
+      } else if (totalMinutes >= 60) {
+        // Hours, minutes
+        html += createSegment(hours, hours === 1 ? 'hr' : 'hrs');
+        html += createSegment(minutes, minutes === 1 ? 'min' : 'mins');
+        html += createSegment(String(seconds).padStart(2, '0'), 'sec');
+        bannerEl.classList.remove('urgent');
+      } else {
+        // Under an hour — minutes and seconds, with urgency pulse
+        html += createSegment(minutes, minutes === 1 ? 'min' : 'mins');
+        html += createSegment(String(seconds).padStart(2, '0'), 'sec');
+        bannerEl.classList.add('urgent');
+      }
+
+      // Only re-render if structure changed (avoid animation reset)
+      const segmentCount = (html.match(/countdown-segment/g) || []).length;
+      const currentCount = countdownEl.querySelectorAll('.countdown-segment').length;
+
+      if (segmentCount !== currentCount) {
+        countdownEl.innerHTML = html;
+      } else {
+        // Just update the values
+        const newDoc = new DOMParser().parseFromString(
+          `<div>${html}</div>`, 'text/html'
+        );
+        const newValues = newDoc.querySelectorAll('.segment-value');
+        const newUnits = newDoc.querySelectorAll('.segment-unit');
+        const curValues = countdownEl.querySelectorAll('.segment-value');
+        const curUnits = countdownEl.querySelectorAll('.segment-unit');
+
+        newValues.forEach((nv, i) => {
+          if (curValues[i] && curValues[i].textContent !== nv.textContent) {
+            curValues[i].textContent = nv.textContent;
+          }
+        });
+        newUnits.forEach((nu, i) => {
+          if (curUnits[i] && curUnits[i].textContent !== nu.textContent) {
+            curUnits[i].textContent = nu.textContent;
+          }
+        });
+      }
+    }
+
+    // Confetti celebration
+    function launchConfetti() {
+      const duration = 8000;
+      const end = Date.now() + duration;
+
+      // Princeton orange + white + gold confetti
+      const colors = ['#e77500', '#F7964A', '#ffffff', '#FFD700', '#C1560E'];
+
+      function frame() {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: colors,
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: colors,
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }
+
+      // Big initial burst
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { x: 0.5, y: 0.5 },
+        colors: colors,
+        startVelocity: 45,
+        ticks: 300,
+      });
+
+      frame();
+
+      // Additional bursts
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          spread: 120,
+          origin: { x: 0.3, y: 0.6 },
+          colors: colors,
+        });
+      }, 1500);
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          spread: 120,
+          origin: { x: 0.7, y: 0.6 },
+          colors: colors,
+        });
+      }, 3000);
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          spread: 160,
+          origin: { x: 0.5, y: 0.5 },
+          colors: colors,
+          startVelocity: 30,
+        });
+      }, 5000);
+    }
+
+    // Run immediately, then every second
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
