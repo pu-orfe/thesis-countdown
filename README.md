@@ -23,7 +23,7 @@ The deadline, title, and timezone are configurable via URL query parameters:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `due` | `2026-04-09T16:30` | Deadline in `YYYY-MM-DDTHH:MM` format |
+| `due` | `2026-04-09T16:00` | Deadline in `YYYY-MM-DDTHH:MM` format |
 | `title` | `Senior Thesis` | Label displayed above the due date |
 | `tz` | `America/New_York` | IANA timezone for the deadline |
 | `end` | `You Did It!` | Message displayed when the countdown reaches zero |
