@@ -393,8 +393,6 @@
         // Weeks and days
         html += createSegment(weeks, weeks === 1 ? 'week' : 'weeks');
         html += createSegment(days, days === 1 ? 'day' : 'days');
-        // Also show hours for context
-        html += createSegment(hours, hours === 1 ? 'hr' : 'hrs');
         bannerEl.classList.remove('urgent');
       } else if (totalHours >= 24) {
         // Days and hours
