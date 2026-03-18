@@ -23,6 +23,35 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Apply repo variable overrides
+        env:
+          COUNTDOWN_DUE: ${{ vars.COUNTDOWN_DUE }}
+          COUNTDOWN_TITLE: ${{ vars.COUNTDOWN_TITLE }}
+          COUNTDOWN_TZ: ${{ vars.COUNTDOWN_TZ }}
+          COUNTDOWN_END: ${{ vars.COUNTDOWN_END }}
+          COUNTDOWN_ENDSUB: ${{ vars.COUNTDOWN_ENDSUB }}
+          COUNTDOWN_CONFETTI: ${{ vars.COUNTDOWN_CONFETTI }}
+        run: |
+          if [ -n "$COUNTDOWN_DUE" ]; then
+            sed -i "s|'2026-04-09T16:30'|'${COUNTDOWN_DUE}'|" index.html
+          fi
+          if [ -n "$COUNTDOWN_TITLE" ]; then
+            sed -i "s|'Senior Thesis'|'${COUNTDOWN_TITLE}'|" index.html
+          fi
+          if [ -n "$COUNTDOWN_TZ" ]; then
+            sed -i "s|'America/New_York'|'${COUNTDOWN_TZ}'|" index.html
+          fi
+          if [ -n "$COUNTDOWN_END" ]; then
+            sed -i "s|'You Did It!'|'${COUNTDOWN_END}'|" index.html
+          fi
+          if [ -n "$COUNTDOWN_ENDSUB" ]; then
+            sed -i "s|'Thesis Complete'|'${COUNTDOWN_ENDSUB}'|" index.html
+          fi
+          if [ -n "$COUNTDOWN_CONFETTI" ]; then
+            sed -i "s|'confetti') || '8'|'confetti') || '${COUNTDOWN_CONFETTI}'|" index.html
+          fi
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

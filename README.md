@@ -43,6 +43,21 @@ https://pu-orfe.github.io/thesis-countdown/?due=2026-05-01T23:59&title=Dissertat
 https://pu-orfe.github.io/thesis-countdown/?end=We%20Made%20It!&endsub=Go%20Celebrate&confetti=0
 ```
 
+### Repo Variables
+
+Defaults can be overridden without editing code by setting [repository variables](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables) in **Settings > Secrets and variables > Actions > Variables**. These are baked into the deployed page at build time. URL query parameters still take precedence at runtime.
+
+| Variable | Overrides default for |
+|----------|----------------------|
+| `COUNTDOWN_DUE` | `due` |
+| `COUNTDOWN_TITLE` | `title` |
+| `COUNTDOWN_TZ` | `tz` |
+| `COUNTDOWN_END` | `end` |
+| `COUNTDOWN_ENDSUB` | `endsub` |
+| `COUNTDOWN_CONFETTI` | `confetti` |
+
+After adding or changing a variable, re-run the workflow or push a non-markdown change to trigger a rebuild.
+
 ## Projection Setup
 
 1. Connect a MacBook to an Apple TV paired with a wall-mounted mini projector
