@@ -261,7 +261,7 @@
   <div class="countdown-banner" id="banner">
     <div class="countdown-inner">
       <div class="label-section">
-        <div class="label-pre">Thesis Due</div>
+        <div class="label-pre">Operations Research &amp; Financial Engineering (ORFE)</div>
         <div class="label-title" id="titleText">Senior Thesis</div>
         <div class="label-due" id="dueDate"></div>
       </div>
@@ -327,7 +327,7 @@
     // Set up labels
     document.getElementById('titleText').textContent = title;
     document.getElementById('dueDate').textContent =
-      dueDate.toLocaleString('en-US', {
+      'Due on ' + dueDate.toLocaleString('en-US', {
         timeZone: tzName,
         weekday: 'long',
         year: 'numeric',
