@@ -267,8 +267,8 @@
       </div>
       <div class="countdown-display" id="countdown"></div>
       <div class="done-message">
-        <div class="done-text">Submitted!</div>
-        <div class="done-sub">Thesis turned in</div>
+        <div class="done-text" id="doneText">You Did It!</div>
+        <div class="done-sub" id="doneSub">Thesis Complete</div>
       </div>
     </div>
   </div>
@@ -286,6 +286,8 @@
     const tzName = params.get('tz') || 'America/New_York';
     const dueParam = params.get('due') || '2026-04-09T16:30';
     const title = params.get('title') || 'Senior Thesis';
+    const endMessage = params.get('end') || 'You Did It!';
+    const endSub = params.get('endsub') || 'Thesis Complete';
 
     // Parse the due date in the specified timezone
     function parseDueDate(isoStr, tz) {
@@ -326,6 +328,8 @@
 
     // Set up labels
     document.getElementById('titleText').textContent = title;
+    document.getElementById('doneText').textContent = endMessage;
+    document.getElementById('doneSub').textContent = endSub;
     document.getElementById('dueDate').textContent =
       'Due on ' + dueDate.toLocaleString('en-US', {
         timeZone: tzName,
