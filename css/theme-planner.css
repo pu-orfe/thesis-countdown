@@ -1,0 +1,28 @@
+/* Planner theme — matches pu-orfe.github.io/ug-planner style
+   Montserrat + Roboto, clean white background, sharp edges */
+
+:root {
+  --bg: #ffffff;
+  --text: #121212;
+  --text-muted: #717171;
+  --accent: #e77500;
+  --label-pre: #e77500;
+  --unit-color: #333;
+  --strip-height: 5px;
+  --strip-bg: #e77500;
+  --font-display: 'Montserrat', sans-serif;
+  --font-title: 'Montserrat', sans-serif;
+  --confetti-colors: #e77500, #F7964A, #333, #FFD700, #C1560E, #411C02;
+}
+
+.label-title {
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 4px;
+  display: inline-block;
+}
+
+.segment-unit {
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}

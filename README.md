@@ -1,31 +1,40 @@
 # Thesis Countdown
 
-A countdown timer for the ORFE senior thesis deadline, styled after the [ORFE](https://orfe.princeton.edu) site.
-
-Designed to be projected onto a wall via a mini projector connected to Apple TV.
+A countdown timer for the ORFE senior thesis deadline, with switchable themes based on Princeton ORFE sites. Designed to be projected onto a wall via a mini projector connected to Apple TV.
 
 **Live:** [pu-orfe.github.io/thesis-countdown](https://pu-orfe.github.io/thesis-countdown/)
 
 ## Features
 
-- **Light color scheme** optimized for projection onto a white wall in poor lighting
+- **Themeable** — two built-in themes switchable via URL param
+- **Light color schemes** optimized for projection onto a white wall in poor lighting
 - **Adaptive time display** that adjusts granularity as the deadline approaches:
-  - More than 7 days out: weeks, days, hours
+  - More than 7 days out: weeks, days
   - 1–7 days: days, hours
   - 1–24 hours: hours, minutes, seconds
   - Under 1 hour: minutes, seconds with an urgency pulse
-- **Confetti explosion** when the countdown reaches zero
-- **Single HTML file** — no build step, no dependencies beyond two CDN links (Google Fonts, canvas-confetti)
+- **Confetti explosion** when the countdown reaches zero (configurable duration, or continuous)
+- **Customizable end message** displayed on completion
+
+## Themes
+
+| Theme | Style | Description |
+|-------|-------|-------------|
+| `planner` (default) | [ug-planner](https://pu-orfe.github.io/ug-planner/) | Montserrat + Roboto, clean white background, orange title underline, sharp edges |
+| `classic` | [orfe.princeton.edu](https://orfe.princeton.edu) | Libre Franklin + Lora, warm cream background (`#FFF7F2`), gradient accent strip |
+
+Switch themes with `?theme=classic` or `?theme=planner`.
 
 ## Configuration
 
-The deadline, title, and timezone are configurable via URL query parameters:
+All settings are configurable via URL query parameters:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
 | `due` | `2026-04-09T16:00` | Deadline in `YYYY-MM-DDTHH:MM` format |
 | `title` | `Senior Thesis` | Label displayed above the due date |
 | `tz` | `America/New_York` | IANA timezone for the deadline |
+| `theme` | `planner` | Visual theme (`planner`, `classic`) |
 | `end` | `You Did It!` | Message displayed when the countdown reaches zero |
 | `endsub` | `Thesis Complete` | Subtext displayed below the end message |
 | `confetti` | `8` | Confetti duration in seconds; `0` for continuous |
@@ -33,8 +42,11 @@ The deadline, title, and timezone are configurable via URL query parameters:
 ### Examples
 
 ```
-# Default — April 9, 2026 at 4:30 PM Eastern
+# Default — planner theme, April 9, 2026 at 4:00 PM Eastern
 https://pu-orfe.github.io/thesis-countdown/
+
+# Classic theme
+https://pu-orfe.github.io/thesis-countdown/?theme=classic
 
 # Custom deadline and title
 https://pu-orfe.github.io/thesis-countdown/?due=2026-05-01T23:59&title=Dissertation&tz=America/Chicago
@@ -52,6 +64,7 @@ Defaults can be overridden without editing code by setting [repository variables
 | `COUNTDOWN_DUE` | `due` |
 | `COUNTDOWN_TITLE` | `title` |
 | `COUNTDOWN_TZ` | `tz` |
+| `COUNTDOWN_THEME` | `theme` |
 | `COUNTDOWN_END` | `end` |
 | `COUNTDOWN_ENDSUB` | `endsub` |
 | `COUNTDOWN_CONFETTI` | `confetti` |
@@ -63,7 +76,7 @@ After adding or changing a variable, re-run the workflow or push a non-markdown 
 1. Connect a MacBook to an Apple TV paired with a wall-mounted mini projector
 2. Extend the display to the Apple TV
 3. Open the countdown URL in a browser on the extended display, or use OBS to composite it as a browser source
-4. The light background (`#FFF7F2`) blends with a white wall — the projector reinforces brightness rather than fighting ambient light
+4. Both themes use light backgrounds that blend with a white wall — the projector reinforces brightness rather than fighting ambient light
 
 ## Deployment
 

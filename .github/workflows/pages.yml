@@ -32,6 +32,7 @@ jobs:
           COUNTDOWN_END: ${{ vars.COUNTDOWN_END }}
           COUNTDOWN_ENDSUB: ${{ vars.COUNTDOWN_ENDSUB }}
           COUNTDOWN_CONFETTI: ${{ vars.COUNTDOWN_CONFETTI }}
+          COUNTDOWN_THEME: ${{ vars.COUNTDOWN_THEME }}
         run: |
           if [ -n "$COUNTDOWN_DUE" ]; then
             sed -i "s|'2026-04-09T16:00'|'${COUNTDOWN_DUE}'|" index.html
@@ -50,6 +51,9 @@ jobs:
           fi
           if [ -n "$COUNTDOWN_CONFETTI" ]; then
             sed -i "s|'confetti') || '8'|'confetti') || '${COUNTDOWN_CONFETTI}'|" index.html
+          fi
+          if [ -n "$COUNTDOWN_THEME" ]; then
+            sed -i "s|'theme') || 'planner'|'theme') || '${COUNTDOWN_THEME}'|" index.html
           fi
 
       - uses: actions/configure-pages@v5

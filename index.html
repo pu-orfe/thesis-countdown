@@ -6,255 +6,30 @@
   <title>Thesis Countdown</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <style>
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  <link rel="stylesheet" href="css/base.css">
+  <script>
+    // Resolve theme before first paint to avoid flash
+    const _params = new URLSearchParams(window.location.search);
+    const _theme = _params.get('theme') || 'planner';
 
-    :root {
-      --color-brand-100: #411C02;
-      --color-brand-90: #6D2E03;
-      --color-brand-80: #C1560E;
-      --color-brand-70: #e77500;
-      --color-brand-60: #F7964A;
-      --color-brand-20: #FEECDE;
-      --color-brand-10: #FFF7F2;
-      --color-black: #000;
-      --color-bg: #121212;
-      --color-white: #fff;
-      --color-neutral-85: #333;
-      --color-neutral-60: #717171;
-      --color-neutral-40: #a0a0a0;
-      --color-neutral-100: #121212;
-      --font-display: 'Libre Franklin', sans-serif;
-      --font-body: 'Lora', serif;
-    }
+    const themeFonts = {
+      classic: 'family=Libre+Franklin:wght@300;400;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400',
+      planner: 'family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700',
+    };
 
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      background: var(--color-brand-10);
-      color: var(--color-neutral-100);
-      font-family: var(--font-display);
-    }
+    // Load theme font
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href = 'https://fonts.googleapis.com/css2?' + (themeFonts[_theme] || themeFonts.planner) + '&display=swap';
+    document.head.appendChild(fontLink);
 
-    .countdown-banner {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--color-brand-10);
-    }
-
-    .countdown-inner {
-      width: 100%;
-      max-width: 1600px;
-      padding: 0 3rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 2rem;
-    }
-
-    .brand-strip {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(
-        90deg,
-        var(--color-brand-70) 0%,
-        var(--color-brand-60) 50%,
-        var(--color-brand-70) 100%
-      );
-      z-index: 10;
-    }
-
-    .label-section {
-      flex-shrink: 0;
-    }
-
-    .label-pre {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--color-brand-70);
-      margin-bottom: 0.25rem;
-    }
-
-    .label-title {
-      font-family: var(--font-body);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--color-neutral-100);
-      line-height: 1.2;
-    }
-
-    .label-due {
-      font-size: 0.7rem;
-      font-weight: 400;
-      color: var(--color-neutral-60);
-      margin-top: 0.35rem;
-      letter-spacing: 0.05em;
-    }
-
-    .countdown-display {
-      display: flex;
-      align-items: baseline;
-      gap: 0.25rem;
-      flex-wrap: nowrap;
-    }
-
-    .countdown-segment {
-      display: flex;
-      align-items: baseline;
-      gap: 0.15rem;
-      opacity: 0;
-      transform: translateY(8px);
-      animation: segmentIn 0.5s ease forwards;
-    }
-
-    .countdown-segment:nth-child(1) { animation-delay: 0.1s; }
-    .countdown-segment:nth-child(2) { animation-delay: 0.2s; }
-    .countdown-segment:nth-child(3) { animation-delay: 0.3s; }
-    .countdown-segment:nth-child(4) { animation-delay: 0.4s; }
-    .countdown-segment:nth-child(5) { animation-delay: 0.5s; }
-
-    @keyframes segmentIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .segment-value {
-      font-size: 4rem;
-      font-weight: 800;
-      color: var(--color-neutral-100);
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-      min-width: 1.5ch;
-      text-align: right;
-    }
-
-    .segment-unit {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--color-brand-80);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      margin-right: 1rem;
-    }
-
-    .separator {
-      font-size: 3rem;
-      font-weight: 300;
-      color: var(--color-neutral-40);
-      margin: 0 0.15rem;
-      align-self: center;
-      line-height: 1;
-    }
-
-    /* Completed state */
-    .countdown-banner.completed .segment-value {
-      color: var(--color-brand-70);
-    }
-
-    .done-message {
-      display: none;
-      text-align: center;
-      width: 100%;
-    }
-
-    .countdown-banner.completed .done-message {
-      display: block;
-    }
-
-    .countdown-banner.completed .countdown-display,
-    .countdown-banner.completed .label-section {
-      display: none;
-    }
-
-    .done-text {
-      font-family: var(--font-body);
-      font-size: 3.5rem;
-      font-weight: 700;
-      color: var(--color-neutral-100);
-      animation: doneIn 0.8s ease;
-    }
-
-    .done-sub {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--color-brand-70);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      margin-top: 0.5rem;
-      animation: doneIn 0.8s ease 0.3s both;
-    }
-
-    @keyframes doneIn {
-      from {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    /* Urgency pulse when under 1 hour */
-    .countdown-banner.urgent .segment-value {
-      animation: urgentPulse 1s ease-in-out infinite;
-    }
-
-    @keyframes urgentPulse {
-      0%, 100% { color: var(--color-neutral-100); }
-      50% { color: var(--color-brand-70); }
-    }
-
-    /* Confetti canvas */
-    canvas.confetti-canvas {
-      position: fixed !important;
-      top: 0;
-      left: 0;
-      width: 100% !important;
-      height: 100% !important;
-      pointer-events: none;
-      z-index: 100;
-    }
-
-    /* Responsive */
-    @media (max-width: 1200px) {
-      .segment-value { font-size: 3rem; }
-      .separator { font-size: 2.2rem; }
-      .label-title { font-size: 1.2rem; }
-    }
-
-    @media (max-width: 768px) {
-      .countdown-inner {
-        flex-direction: column;
-        text-align: center;
-        gap: 1rem;
-        padding: 0 1.5rem;
-      }
-      .segment-value { font-size: 2.5rem; }
-      .segment-unit { font-size: 0.7rem; margin-right: 0.6rem; }
-      .separator { font-size: 1.8rem; }
-      .done-text { font-size: 2.5rem; }
-    }
-  </style>
+    // Load theme CSS
+    const themeLink = document.createElement('link');
+    themeLink.rel = 'stylesheet';
+    themeLink.href = 'css/theme-' + (_theme === 'classic' ? 'classic' : 'planner') + '.css';
+    document.head.appendChild(themeLink);
+  </script>
 </head>
 <body>
   <div class="brand-strip"></div>
@@ -275,11 +50,13 @@
 
   <script>
     // Configuration via URL parameters:
-    //   ?due=2026-04-14T17:00   ISO date-time of the deadline
+    //   ?due=2026-04-09T16:00   ISO date-time of the deadline
     //   ?title=Senior%20Thesis  Label text
     //   ?tz=America/New_York    IANA timezone for the deadline
-    //
-    // Defaults to April 14, 2026 at 5:00 PM Eastern if no params given.
+    //   ?theme=planner          Theme name (planner, classic)
+    //   ?end=You%20Did%20It!    Completion message
+    //   ?endsub=Thesis%20Complete  Completion subtext
+    //   ?confetti=8             Confetti duration in seconds (0 = continuous)
 
     const params = new URLSearchParams(window.location.search);
 
@@ -292,18 +69,6 @@
 
     // Parse the due date in the specified timezone
     function parseDueDate(isoStr, tz) {
-      // Build a date string that JavaScript can parse in the given timezone
-      const dateStr = isoStr.replace('T', ' ');
-      // Create a formatter that outputs in the target timezone
-      const formatter = new Intl.DateTimeFormat('en-US', {
-        timeZone: tz,
-        year: 'numeric', month: '2-digit', day: '2-digit',
-        hour: '2-digit', minute: '2-digit', second: '2-digit',
-        hour12: false,
-      });
-
-      // We need to find the UTC time that corresponds to the given local time.
-      // Start with a naive parse and iteratively adjust.
       const parts = isoStr.split(/[-T:]/);
       const year = parseInt(parts[0]);
       const month = parseInt(parts[1]) - 1;
@@ -311,10 +76,8 @@
       const hour = parseInt(parts[3]) || 0;
       const minute = parseInt(parts[4]) || 0;
 
-      // Create a guess in UTC
       let guess = new Date(Date.UTC(year, month, day, hour, minute, 0));
 
-      // Get what that guess looks like in the target timezone
       for (let i = 0; i < 3; i++) {
         const inTZ = new Date(guess.toLocaleString('en-US', { timeZone: tz }));
         const target = new Date(year, month, day, hour, minute, 0);
@@ -386,27 +149,23 @@
       // Adaptive display based on closeness:
       // > 7 days:    Weeks  Days
       // 1-7 days:    Days  Hours
-      // 1-24 hours:  Hours  Minutes
+      // 1-24 hours:  Hours  Minutes  Seconds
       // < 1 hour:    Minutes  Seconds
 
       if (totalDays > 7) {
-        // Weeks and days
         html += createSegment(weeks, weeks === 1 ? 'week' : 'weeks');
         html += createSegment(days, days === 1 ? 'day' : 'days');
         bannerEl.classList.remove('urgent');
       } else if (totalHours >= 24) {
-        // Days and hours
         html += createSegment(totalDays, totalDays === 1 ? 'day' : 'days');
         html += createSegment(hours, hours === 1 ? 'hr' : 'hrs');
         bannerEl.classList.remove('urgent');
       } else if (totalMinutes >= 60) {
-        // Hours, minutes
         html += createSegment(hours, hours === 1 ? 'hr' : 'hrs');
         html += createSegment(minutes, minutes === 1 ? 'min' : 'mins');
         html += createSegment(String(seconds).padStart(2, '0'), 'sec');
         bannerEl.classList.remove('urgent');
       } else {
-        // Under an hour — minutes and seconds, with urgency pulse
         html += createSegment(minutes, minutes === 1 ? 'min' : 'mins');
         html += createSegment(String(seconds).padStart(2, '0'), 'sec');
         bannerEl.classList.add('urgent');
@@ -419,7 +178,6 @@
       if (segmentCount !== currentCount) {
         countdownEl.innerHTML = html;
       } else {
-        // Just update the values
         const newDoc = new DOMParser().parseFromString(
           `<div>${html}</div>`, 'text/html'
         );
@@ -441,14 +199,22 @@
       }
     }
 
+    // Read confetti colors from the theme's CSS custom property
+    function getConfettiColors() {
+      const raw = getComputedStyle(document.documentElement)
+        .getPropertyValue('--confetti-colors').trim();
+      if (raw) {
+        return raw.split(',').map(c => c.trim());
+      }
+      return ['#e77500', '#F7964A', '#121212', '#FFD700', '#C1560E', '#411C02'];
+    }
+
     // Confetti celebration
     function launchConfetti() {
       const continuous = confettiDuration === 0;
       const durationMs = continuous ? Infinity : confettiDuration * 1000;
       const end = Date.now() + durationMs;
-
-      // Princeton orange + gold + dark confetti
-      const colors = ['#e77500', '#F7964A', '#121212', '#FFD700', '#C1560E', '#411C02'];
+      const colors = getConfettiColors();
 
       function frame() {
         confetti({
@@ -516,7 +282,6 @@
 
       scheduleBursts();
 
-      // In continuous mode, repeat the burst cycle every 8 seconds
       if (continuous) {
         setInterval(scheduleBursts, 8000);
       }

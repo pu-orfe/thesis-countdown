@@ -1,0 +1,16 @@
+/* Classic theme — matches orfe.princeton.edu header style
+   Libre Franklin + Lora, warm cream background (#FFF7F2) */
+
+:root {
+  --bg: #FFF7F2;
+  --text: #121212;
+  --text-muted: #717171;
+  --accent: #e77500;
+  --label-pre: #e77500;
+  --unit-color: #C1560E;
+  --strip-height: 4px;
+  --strip-bg: linear-gradient(90deg, #e77500 0%, #F7964A 50%, #e77500 100%);
+  --font-display: 'Libre Franklin', sans-serif;
+  --font-title: 'Lora', serif;
+  --confetti-colors: #e77500, #F7964A, #121212, #FFD700, #C1560E, #411C02;
+}

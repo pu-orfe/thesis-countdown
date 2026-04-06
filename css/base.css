@@ -1,0 +1,214 @@
+/* Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Layout */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-display);
+}
+
+.countdown-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.countdown-inner {
+  width: 100%;
+  max-width: 1600px;
+  padding: 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.brand-strip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--strip-height, 4px);
+  background: var(--strip-bg);
+  z-index: 10;
+}
+
+/* Labels */
+.label-section {
+  flex-shrink: 0;
+}
+
+.label-pre {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--label-pre);
+  margin-bottom: 0.25rem;
+}
+
+.label-title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.label-due {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  letter-spacing: 0.05em;
+}
+
+/* Countdown segments */
+.countdown-display {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  flex-wrap: nowrap;
+}
+
+.countdown-segment {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: segmentIn 0.5s ease forwards;
+}
+
+.countdown-segment:nth-child(1) { animation-delay: 0.1s; }
+.countdown-segment:nth-child(2) { animation-delay: 0.2s; }
+.countdown-segment:nth-child(3) { animation-delay: 0.3s; }
+.countdown-segment:nth-child(4) { animation-delay: 0.4s; }
+.countdown-segment:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes segmentIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.segment-value {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  min-width: 1.5ch;
+  text-align: right;
+}
+
+.segment-unit {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--unit-color);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-right: 1rem;
+}
+
+/* Completed state */
+.countdown-banner.completed .segment-value {
+  color: var(--accent);
+}
+
+.done-message {
+  display: none;
+  text-align: center;
+  width: 100%;
+}
+
+.countdown-banner.completed .done-message {
+  display: block;
+}
+
+.countdown-banner.completed .countdown-display,
+.countdown-banner.completed .label-section {
+  display: none;
+}
+
+.done-text {
+  font-family: var(--font-title);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text);
+  animation: doneIn 0.8s ease;
+}
+
+.done-sub {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  animation: doneIn 0.8s ease 0.3s both;
+}
+
+@keyframes doneIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Urgency pulse when under 1 hour */
+.countdown-banner.urgent .segment-value {
+  animation: urgentPulse 1s ease-in-out infinite;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { color: var(--text); }
+  50% { color: var(--accent); }
+}
+
+/* Confetti canvas */
+canvas.confetti-canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .segment-value { font-size: 3rem; }
+  .label-title { font-size: 1.2rem; }
+}
+
+@media (max-width: 768px) {
+  .countdown-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 0 1.5rem;
+  }
+  .segment-value { font-size: 2.5rem; }
+  .segment-unit { font-size: 0.7rem; margin-right: 0.6rem; }
+  .done-text { font-size: 2.5rem; }
+}
