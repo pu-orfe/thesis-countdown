@@ -197,8 +197,8 @@ canvas.confetti-canvas {
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .segment-value { font-size: 3rem; }
-  .label-title { font-size: 1.2rem; }
+  .segment-value { font-size: 3.5rem; }
+  .label-title { font-size: 3rem; }
 }
 
 @media (max-width: 768px) {
@@ -208,7 +208,8 @@ canvas.confetti-canvas {
     gap: 1rem;
     padding: 0 1.5rem;
   }
-  .segment-value { font-size: 2.5rem; }
+  .segment-value { font-size: 3rem; }
   .segment-unit { font-size: 0.7rem; margin-right: 0.6rem; }
-  .done-text { font-size: 2.5rem; }
+  .label-title { font-size: 3rem; }
+  .done-text { font-size: 3rem; }
 }
