@@ -9,9 +9,15 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="css/base.css">
   <script>
-    // Resolve theme before first paint to avoid flash
+    // Resolve theme and layout before first paint to avoid flash
     const _params = new URLSearchParams(window.location.search);
     const _theme = _params.get('theme') || 'planner';
+    const _layout = _params.get('layout') || 'default';
+
+    // Apply layout class to body before paint
+    if (_layout === 'footer') {
+      document.documentElement.classList.add('layout-footer');
+    }
 
     const themeFonts = {
       classic: 'family=Libre+Franklin:wght@300;400;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400',

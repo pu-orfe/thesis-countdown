@@ -1,13 +1,14 @@
 # Thesis Countdown
 
-A countdown timer for the ORFE senior thesis deadline, with switchable themes based on Princeton ORFE sites. Designed to be projected onto a wall via a mini projector connected to Apple TV.
+A countdown timer for the ORFE senior thesis deadline, with switchable themes based on Princeton ORFE sites. Designed for display on a 4K monitor or projected onto a wall via Apple TV.
 
 **Live:** [pu-orfe.github.io/thesis-countdown](https://pu-orfe.github.io/thesis-countdown/)
 
 ## Features
 
+- **4K-optimized** — large, centered layout scaled for high-resolution displays
 - **Themeable** — two built-in themes switchable via URL param
-- **Light color schemes** optimized for projection onto a white wall in poor lighting
+- **Layout modes** — full-screen centered (default) or compact horizontal footer
 - **Adaptive time display** that adjusts granularity as the deadline approaches:
   - More than 7 days out: weeks, days
   - 1–7 days: days, hours
@@ -35,6 +36,7 @@ All settings are configurable via URL query parameters:
 | `title` | `Senior Thesis` | Label displayed above the due date |
 | `tz` | `America/New_York` | IANA timezone for the deadline |
 | `theme` | `planner` | Visual theme (`planner`, `classic`) |
+| `layout` | `default` | Layout mode (`default` = centered for 4K, `footer` = wide horizontal strip) |
 | `end` | `You Did It!` | Message displayed when the countdown reaches zero |
 | `endsub` | `Thesis Complete` | Subtext displayed below the end message |
 | `confetti` | `8` | Confetti duration in seconds; `0` for continuous |
@@ -42,11 +44,14 @@ All settings are configurable via URL query parameters:
 ### Examples
 
 ```
-# Default — planner theme, April 9, 2026 at 4:00 PM Eastern
+# Default — centered 4K layout, planner theme
 https://pu-orfe.github.io/thesis-countdown/
 
-# Classic theme
-https://pu-orfe.github.io/thesis-countdown/?theme=classic
+# Footer layout for OBS compositing or projector strip
+https://pu-orfe.github.io/thesis-countdown/?layout=footer
+
+# Classic theme in footer mode
+https://pu-orfe.github.io/thesis-countdown/?theme=classic&layout=footer
 
 # Custom deadline and title
 https://pu-orfe.github.io/thesis-countdown/?due=2026-05-01T23:59&title=Dissertation&tz=America/Chicago
@@ -65,6 +70,7 @@ Defaults can be overridden without editing code by setting [repository variables
 | `COUNTDOWN_TITLE` | `title` |
 | `COUNTDOWN_TZ` | `tz` |
 | `COUNTDOWN_THEME` | `theme` |
+| `COUNTDOWN_LAYOUT` | `layout` |
 | `COUNTDOWN_END` | `end` |
 | `COUNTDOWN_ENDSUB` | `endsub` |
 | `COUNTDOWN_CONFETTI` | `confetti` |
@@ -77,6 +83,7 @@ After adding or changing a variable, re-run the workflow or push a non-markdown 
 2. Extend the display to the Apple TV
 3. Open the countdown URL in a browser on the extended display, or use OBS to composite it as a browser source
 4. Both themes use light backgrounds that blend with a white wall — the projector reinforces brightness rather than fighting ambient light
+5. Use `?layout=footer` for the compact horizontal strip mode when compositing in OBS
 
 ## Deployment
 

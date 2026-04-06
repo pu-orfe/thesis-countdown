@@ -16,9 +16,16 @@
 }
 
 .label-title {
-  border-bottom: 3px solid var(--accent);
-  padding-bottom: 4px;
+  border-bottom: 4px solid var(--accent);
+  padding-bottom: 6px;
   display: inline-block;
+}
+
+@media (min-width: 2560px) {
+  .label-title {
+    border-bottom-width: 6px;
+    padding-bottom: 10px;
+  }
 }
 
 .segment-unit {
