@@ -3,6 +3,7 @@
 A countdown timer for the ORFE senior thesis deadline, with switchable themes based on Princeton ORFE sites. Designed for display on a 4K monitor or projected onto a wall via Apple TV.
 
 **Live:** [pu-orfe.github.io/thesis-countdown](https://pu-orfe.github.io/thesis-countdown/)
+**URL builder:** [pu-orfe.github.io/thesis-countdown/builder.html](https://pu-orfe.github.io/thesis-countdown/builder.html) — form-based UI for setting the query parameters below.
 
 ## Features
 

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thesis Countdown — URL Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --panel: #fafafa;
+      --border: #e4e4e4;
+      --text: #121212;
+      --text-muted: #717171;
+      --accent: #e77500;
+      --accent-dark: #C1560E;
+      --strip: #e77500;
+      --mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .strip {
+      height: 5px;
+      background: var(--strip);
+    }
+
+    header {
+      padding: 32px 40px 8px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      margin: 0 0 4px;
+      display: inline-block;
+      border-bottom: 4px solid var(--accent);
+      padding-bottom: 6px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin: 12px 0 0;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 40px 48px;
+      display: grid;
+      grid-template-columns: minmax(340px, 460px) 1fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 24px;
+    }
+
+    .panel h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 0 0 16px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .field .hint {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .field input[type="text"],
+    .field input[type="number"],
+    .field input[type="datetime-local"],
+    .field select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      background: white;
+      font-family: 'Roboto', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      border-radius: 0;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .url-box {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+      word-break: break-all;
+      user-select: all;
+      line-height: 1.5;
+    }
+
+    .url-box .param-key { color: var(--accent-dark); }
+    .url-box .param-val { color: #121212; }
+    .url-box .base { color: #717171; }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 0;
+      transition: background 0.15s;
+    }
+
+    button:hover { background: var(--accent-dark); }
+
+    button.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.secondary:hover {
+      background: #f0f0f0;
+      border-color: #ccc;
+    }
+
+    .preview-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-frame-wrap {
+      background: white;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #121212;
+      color: white;
+      padding: 12px 20px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.03em;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .preset-btn {
+      font-size: 11px;
+      padding: 6px 10px;
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--border);
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 500;
+    }
+
+    .preset-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    footer {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px 32px;
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    footer a { color: var(--accent-dark); }
+  </style>
+</head>
+<body>
+  <div class="strip"></div>
+
+  <header>
+    <h1>Thesis Countdown — URL Builder</h1>
+    <p class="subtitle">Configure the countdown parameters and copy the resulting URL. The preview below updates live.</p>
+  </header>
+
+  <main>
+    <section class="panel" aria-label="Parameters">
+      <h2>Parameters</h2>
+
+      <div class="presets" aria-label="Presets">
+        <button type="button" class="preset-btn" data-preset="default">Default</button>
+        <button type="button" class="preset-btn" data-preset="footer">Footer / OBS</button>
+        <button type="button" class="preset-btn" data-preset="classic">Classic theme</button>
+        <button type="button" class="preset-btn" data-preset="celebrate">Continuous confetti</button>
+      </div>
+
+      <div class="field">
+        <label for="due">Due date &amp; time</label>
+        <input type="datetime-local" id="due" value="2026-04-09T16:00">
+        <div class="hint">Local wall-clock time in the timezone below.</div>
+      </div>
+
+      <div class="field">
+        <label for="tz">Timezone</label>
+        <input type="text" id="tz" list="tz-list" value="America/New_York">
+        <datalist id="tz-list">
+          <option value="America/New_York">
+          <option value="America/Chicago">
+          <option value="America/Denver">
+          <option value="America/Los_Angeles">
+          <option value="America/Anchorage">
+          <option value="Pacific/Honolulu">
+          <option value="Europe/London">
+          <option value="Europe/Berlin">
+          <option value="Europe/Paris">
+          <option value="Asia/Tokyo">
+          <option value="Asia/Shanghai">
+          <option value="Asia/Kolkata">
+          <option value="Australia/Sydney">
+          <option value="UTC">
+        </datalist>
+        <div class="hint">Any IANA timezone identifier.</div>
+      </div>
+
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" value="Senior Thesis">
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="theme">Theme</label>
+          <select id="theme">
+            <option value="planner">planner</option>
+            <option value="classic">classic</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="layout">Layout</label>
+          <select id="layout">
+            <option value="default">default</option>
+            <option value="footer">footer</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="end">End message</label>
+        <input type="text" id="end" value="You Did It!">
+      </div>
+
+      <div class="field">
+        <label for="endsub">End subtext</label>
+        <input type="text" id="endsub" value="Thesis Complete">
+      </div>
+
+      <div class="field">
+        <label for="confetti">Confetti duration (seconds)</label>
+        <input type="number" id="confetti" min="0" step="1" value="8">
+        <div class="hint"><code>0</code> = continuous.</div>
+      </div>
+    </section>
+
+    <section class="preview-wrap" aria-label="Preview">
+      <div class="panel">
+        <h2>Generated URL</h2>
+        <div class="url-box" id="urlBox"></div>
+        <div class="actions">
+          <button type="button" id="copyBtn">Copy URL</button>
+          <button type="button" class="secondary" id="openBtn">Open in new tab</button>
+          <button type="button" class="secondary" id="resetBtn">Reset defaults</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Live preview</h2>
+        <div class="preview-frame-wrap">
+          <iframe id="preview" title="Countdown preview"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    See the <a href="README.md">README</a> for full parameter reference. Repo variables set on the GitHub Pages build take precedence over the defaults shown here, but URL params always win at runtime.
+  </footer>
+
+  <div class="toast" id="toast">Copied to clipboard</div>
+
+  <script>
+    // Defaults MUST match those in index.html
+    const DEFAULTS = {
+      due: '2026-04-09T16:00',
+      tz: 'America/New_York',
+      title: 'Senior Thesis',
+      theme: 'planner',
+      layout: 'default',
+      end: 'You Did It!',
+      endsub: 'Thesis Complete',
+      confetti: '8',
+    };
+
+    const PRESETS = {
+      default: { ...DEFAULTS },
+      footer:  { ...DEFAULTS, layout: 'footer' },
+      classic: { ...DEFAULTS, theme: 'classic' },
+      celebrate: { ...DEFAULTS, confetti: '0', end: 'We Made It!', endsub: 'Go Celebrate' },
+    };
+
+    const FIELDS = Object.keys(DEFAULTS);
+
+    const els = Object.fromEntries(FIELDS.map(k => [k, document.getElementById(k)]));
+    const urlBox = document.getElementById('urlBox');
+    const preview = document.getElementById('preview');
+    const toast = document.getElementById('toast');
+
+    // Base URL = the countdown page (index.html) next to this builder
+    const BASE_URL = new URL('./index.html', window.location.href).href;
+
+    function currentValues() {
+      const v = {};
+      for (const k of FIELDS) v[k] = els[k].value;
+      return v;
+    }
+
+    function buildQueryString(values, { omitDefaults = true } = {}) {
+      const params = new URLSearchParams();
+      for (const k of FIELDS) {
+        const val = values[k];
+        if (val === undefined || val === '') continue;
+        if (omitDefaults && val === DEFAULTS[k]) continue;
+        params.set(k, val);
+      }
+      return params.toString();
+    }
+
+    function buildUrl(values, opts) {
+      const qs = buildQueryString(values, opts);
+      return qs ? `${BASE_URL}?${qs}` : BASE_URL;
+    }
+
+    function renderUrlBox(values) {
+      const qs = buildQueryString(values);
+      urlBox.innerHTML = '';
+
+      const base = document.createElement('span');
+      base.className = 'base';
+      base.textContent = BASE_URL;
+      urlBox.appendChild(base);
+
+      if (!qs) return;
+
+      urlBox.appendChild(document.createTextNode('?'));
+      const pairs = qs.split('&');
+      pairs.forEach((pair, i) => {
+        if (i > 0) urlBox.appendChild(document.createTextNode('&'));
+        const [k, v] = pair.split('=');
+        const keySpan = document.createElement('span');
+        keySpan.className = 'param-key';
+        keySpan.textContent = k;
+        const valSpan = document.createElement('span');
+        valSpan.className = 'param-val';
+        valSpan.textContent = '=' + (v || '');
+        urlBox.appendChild(keySpan);
+        urlBox.appendChild(valSpan);
+      });
+    }
+
+    let previewTimer = null;
+    function updatePreview(values) {
+      // Debounce so we don't reload the iframe on every keystroke
+      clearTimeout(previewTimer);
+      previewTimer = setTimeout(() => {
+        // Force confetti to a short burst in preview to avoid runaway effects
+        const previewValues = { ...values };
+        if (previewValues.confetti === '0') previewValues.confetti = '4';
+        preview.src = buildUrl(previewValues, { omitDefaults: false });
+      }, 250);
+    }
+
+    function refresh() {
+      const values = currentValues();
+      renderUrlBox(values);
+      updatePreview(values);
+    }
+
+    for (const k of FIELDS) {
+      els[k].addEventListener('input', refresh);
+      els[k].addEventListener('change', refresh);
+    }
+
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      const url = buildUrl(currentValues());
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast('Copied to clipboard');
+      } catch {
+        // Fallback for older browsers or non-secure contexts
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Copied to clipboard'); }
+        catch { showToast('Copy failed — select and copy manually'); }
+        document.body.removeChild(ta);
+      }
+    });
+
+    document.getElementById('openBtn').addEventListener('click', () => {
+      window.open(buildUrl(currentValues()), '_blank', 'noopener');
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      applyValues(DEFAULTS);
+    });
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const preset = PRESETS[btn.dataset.preset];
+        if (preset) applyValues(preset);
+      });
+    });
+
+    function applyValues(values) {
+      for (const k of FIELDS) {
+        if (values[k] !== undefined) els[k].value = values[k];
+      }
+      refresh();
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    // If the builder itself was opened with params, pre-populate from them
+    (function initFromUrl() {
+      const p = new URLSearchParams(window.location.search);
+      const init = {};
+      for (const k of FIELDS) {
+        if (p.has(k)) init[k] = p.get(k);
+      }
+      if (Object.keys(init).length) applyValues(init);
+      else refresh();
+    })();
+  </script>
+</body>
+</html>
