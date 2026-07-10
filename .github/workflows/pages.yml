@@ -36,7 +36,7 @@ jobs:
           COUNTDOWN_LAYOUT: ${{ vars.COUNTDOWN_LAYOUT }}
         run: |
           if [ -n "$COUNTDOWN_DUE" ]; then
-            sed -i "s|'2026-04-09T16:00'|'${COUNTDOWN_DUE}'|" index.html
+            sed -i "s|const bakedDue = '';|const bakedDue = '${COUNTDOWN_DUE}';|" index.html
           fi
           if [ -n "$COUNTDOWN_TITLE" ]; then
             sed -i "s|'Senior Thesis'|'${COUNTDOWN_TITLE}'|" index.html

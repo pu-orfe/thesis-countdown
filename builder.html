@@ -278,8 +278,8 @@
 
       <div class="field">
         <label for="due">Due date &amp; time</label>
-        <input type="datetime-local" id="due" value="2026-04-09T16:00">
-        <div class="hint">Local wall-clock time in the timezone below.</div>
+        <input type="datetime-local" id="due">
+        <div class="hint">Wall-clock time in the timezone below. Defaults to the next 2nd Thursday of April at 16:00.</div>
       </div>
 
       <div class="field">
@@ -370,9 +370,26 @@
   <div class="toast" id="toast">Copied to clipboard</div>
 
   <script>
+    // Default deadline logic mirrors index.html: 2nd Thursday of April at 16:00,
+    // rolling to next year the day after that Thursday.
+    function secondThursdayOfApril(year) {
+      const firstOfApril = new Date(year, 3, 1);
+      const daysUntilThursday = (4 - firstOfApril.getDay() + 7) % 7;
+      return 1 + daysUntilThursday + 7;
+    }
+    function computeDefaultDue() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const today = new Date(y, now.getMonth(), now.getDate());
+      const thisYearThursday = new Date(y, 3, secondThursdayOfApril(y));
+      const useYear = today > thisYearThursday ? y + 1 : y;
+      const day = secondThursdayOfApril(useYear);
+      return `${useYear}-04-${String(day).padStart(2, '0')}T16:00`;
+    }
+
     // Defaults MUST match those in index.html
     const DEFAULTS = {
-      due: '2026-04-09T16:00',
+      due: computeDefaultDue(),
       tz: 'America/New_York',
       title: 'Senior Thesis',
       theme: 'planner',
@@ -518,15 +535,15 @@
       toastTimer = setTimeout(() => toast.classList.remove('show'), 1800);
     }
 
-    // If the builder itself was opened with params, pre-populate from them
-    (function initFromUrl() {
+    // Seed with defaults, then overlay any params from the builder's own URL
+    (function init() {
+      applyValues(DEFAULTS);
       const p = new URLSearchParams(window.location.search);
-      const init = {};
+      const overrides = {};
       for (const k of FIELDS) {
-        if (p.has(k)) init[k] = p.get(k);
+        if (p.has(k)) overrides[k] = p.get(k);
       }
-      if (Object.keys(init).length) applyValues(init);
-      else refresh();
+      if (Object.keys(overrides).length) applyValues(overrides);
     })();
   </script>
 </body>

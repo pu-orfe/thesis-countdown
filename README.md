@@ -33,7 +33,7 @@ All settings are configurable via URL query parameters:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `due` | `2026-04-09T16:00` | Deadline in `YYYY-MM-DDTHH:MM` format |
+| `due` | 2nd Thursday of April at 16:00 (rolls to the next year the day after) | Deadline in `YYYY-MM-DDTHH:MM` format |
 | `title` | `Senior Thesis` | Label displayed above the due date |
 | `tz` | `America/New_York` | IANA timezone for the deadline |
 | `theme` | `planner` | Visual theme (`planner`, `classic`) |

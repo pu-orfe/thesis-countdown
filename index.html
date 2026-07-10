@@ -66,8 +66,30 @@
 
     const params = new URLSearchParams(window.location.search);
 
+    // Default deadline: the 2nd Thursday of April at 16:00 in the target timezone.
+    // Rolls to next year the day after that Thursday, so the page keeps counting
+    // down to a real future date without needing a manual bump each spring.
+    function secondThursdayOfApril(year) {
+      const firstOfApril = new Date(year, 3, 1);
+      const daysUntilThursday = (4 - firstOfApril.getDay() + 7) % 7;
+      return 1 + daysUntilThursday + 7;
+    }
+    function computeDefaultDue() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const today = new Date(y, now.getMonth(), now.getDate());
+      const thisYearThursday = new Date(y, 3, secondThursdayOfApril(y));
+      const useYear = today > thisYearThursday ? y + 1 : y;
+      const day = secondThursdayOfApril(useYear);
+      return `${useYear}-04-${String(day).padStart(2, '0')}T16:00`;
+    }
+
+    // Optional build-time override; the workflow rewrites the empty string when
+    // the COUNTDOWN_DUE repo variable is set.
+    const bakedDue = '';
+
     const tzName = params.get('tz') || 'America/New_York';
-    const dueParam = params.get('due') || '2026-04-09T16:00';
+    const dueParam = params.get('due') || bakedDue || computeDefaultDue();
     const title = params.get('title') || 'Senior Thesis';
     const endMessage = params.get('end') || 'You Did It!';
     const endSub = params.get('endsub') || 'Thesis Complete';
