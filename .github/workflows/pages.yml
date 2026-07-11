@@ -36,28 +36,28 @@ jobs:
           COUNTDOWN_LAYOUT: ${{ vars.COUNTDOWN_LAYOUT }}
         run: |
           if [ -n "$COUNTDOWN_DUE" ]; then
-            sed -i "s|const bakedDue = '';|const bakedDue = '${COUNTDOWN_DUE}';|" index.html
+            sed -i "s|const bakedDue = '';|const bakedDue = '${COUNTDOWN_DUE}';|" countdown.html
           fi
           if [ -n "$COUNTDOWN_TITLE" ]; then
-            sed -i "s|'Senior Thesis'|'${COUNTDOWN_TITLE}'|" index.html
+            sed -i "s|'Senior Thesis'|'${COUNTDOWN_TITLE}'|" countdown.html
           fi
           if [ -n "$COUNTDOWN_TZ" ]; then
-            sed -i "s|'America/New_York'|'${COUNTDOWN_TZ}'|" index.html
+            sed -i "s|'America/New_York'|'${COUNTDOWN_TZ}'|" countdown.html
           fi
           if [ -n "$COUNTDOWN_END" ]; then
-            sed -i "s|'You Did It!'|'${COUNTDOWN_END}'|" index.html
+            sed -i "s|'You Did It!'|'${COUNTDOWN_END}'|" countdown.html
           fi
           if [ -n "$COUNTDOWN_ENDSUB" ]; then
-            sed -i "s|'Thesis Complete'|'${COUNTDOWN_ENDSUB}'|" index.html
+            sed -i "s|'Thesis Complete'|'${COUNTDOWN_ENDSUB}'|" countdown.html
           fi
           if [ -n "$COUNTDOWN_CONFETTI" ]; then
-            sed -i "s|'confetti') || '8'|'confetti') || '${COUNTDOWN_CONFETTI}'|" index.html
+            sed -i "s|'confetti') || '8'|'confetti') || '${COUNTDOWN_CONFETTI}'|" countdown.html
           fi
           if [ -n "$COUNTDOWN_THEME" ]; then
-            sed -i "s|'theme') || 'planner'|'theme') || '${COUNTDOWN_THEME}'|" index.html
+            sed -i "s|'theme') || 'planner'|'theme') || '${COUNTDOWN_THEME}'|" countdown.html
           fi
           if [ -n "$COUNTDOWN_LAYOUT" ]; then
-            sed -i "s|'layout') || 'default'|'layout') || '${COUNTDOWN_LAYOUT}'|" index.html
+            sed -i "s|'layout') || 'default'|'layout') || '${COUNTDOWN_LAYOUT}'|" countdown.html
           fi
 
       - uses: actions/configure-pages@v5

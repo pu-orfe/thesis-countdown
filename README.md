@@ -2,8 +2,8 @@
 
 A countdown timer for the ORFE senior thesis deadline, with switchable themes based on Princeton ORFE sites. Designed for display on a 4K monitor or projected onto a wall via Apple TV.
 
-**Live:** [pu-orfe.github.io/thesis-countdown](https://pu-orfe.github.io/thesis-countdown/)
-**URL builder:** [pu-orfe.github.io/thesis-countdown/builder.html](https://pu-orfe.github.io/thesis-countdown/builder.html) — form-based UI for setting the query parameters below.
+**Live URL Builder:** [pu-orfe.github.io/thesis-countdown](https://pu-orfe.github.io/thesis-countdown/) — form-based UI for setting the query parameters below.
+**Direct Countdown Link:** [pu-orfe.github.io/thesis-countdown/countdown.html](https://pu-orfe.github.io/thesis-countdown/countdown.html)
 
 ## Features
 
@@ -46,19 +46,19 @@ All settings are configurable via URL query parameters:
 
 ```
 # Default — centered 4K layout, planner theme
-https://pu-orfe.github.io/thesis-countdown/
+https://pu-orfe.github.io/thesis-countdown/countdown.html
 
 # Footer layout for OBS compositing or projector strip
-https://pu-orfe.github.io/thesis-countdown/?layout=footer
+https://pu-orfe.github.io/thesis-countdown/countdown.html?layout=footer
 
 # Classic theme in footer mode
-https://pu-orfe.github.io/thesis-countdown/?theme=classic&layout=footer
+https://pu-orfe.github.io/thesis-countdown/countdown.html?theme=classic&layout=footer
 
 # Custom deadline and title
-https://pu-orfe.github.io/thesis-countdown/?due=2026-05-01T23:59&title=Dissertation&tz=America/Chicago
+https://pu-orfe.github.io/thesis-countdown/countdown.html?due=2026-05-01T23:59&title=Dissertation&tz=America/Chicago
 
 # Custom end message with continuous confetti
-https://pu-orfe.github.io/thesis-countdown/?end=We%20Made%20It!&endsub=Go%20Celebrate&confetti=0
+https://pu-orfe.github.io/thesis-countdown/countdown.html?end=We%20Made%20It!&endsub=Go%20Celebrate&confetti=0
 ```
 
 ### Repo Variables
@@ -90,4 +90,4 @@ After adding or changing a variable, re-run the workflow or push a non-markdown 
 
 Hosted via GitHub Pages. The site rebuilds automatically on any push to `main` that includes non-markdown file changes.
 
-To run locally, open `index.html` in a browser — no server required.
+To run locally, open `index.html` in a browser to use the builder, or `countdown.html` to view the countdown directly — no server required.

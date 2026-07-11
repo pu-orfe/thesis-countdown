@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thesis Countdown</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="css/base.css">
+  <script>
+    // Resolve theme and layout before first paint to avoid flash
+    const _params = new URLSearchParams(window.location.search);
+    const _theme = _params.get('theme') || 'planner';
+    const _layout = _params.get('layout') || 'default';
+
+    // Apply layout class to body before paint
+    if (_layout === 'footer') {
+      document.documentElement.classList.add('layout-footer');
+    }
+
+    const themeFonts = {
+      classic: 'family=Libre+Franklin:wght@300;400;600;700;800&family=Lora:ital,wght@0,400;0,700;1,400',
+      planner: 'family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700',
+    };
+
+    // Load theme font
+    const fontLink = document.createElement('link');
+    fontLink.rel = 'stylesheet';
+    fontLink.href = 'https://fonts.googleapis.com/css2?' + (themeFonts[_theme] || themeFonts.planner) + '&display=swap';
+    document.head.appendChild(fontLink);
+
+    // Load theme CSS
+    const themeLink = document.createElement('link');
+    themeLink.rel = 'stylesheet';
+    themeLink.href = 'css/theme-' + (_theme === 'classic' ? 'classic' : 'planner') + '.css';
+    document.head.appendChild(themeLink);
+  </script>
+</head>
+<body>
+  <div class="brand-strip"></div>
+  <div class="countdown-banner" id="banner">
+    <div class="countdown-inner">
+      <div class="label-section">
+        <div class="label-pre">Operations Research &amp; Financial Engineering (ORFE)</div>
+        <div class="label-title" id="titleText">Senior Thesis</div>
+        <div class="label-due" id="dueDate"></div>
+      </div>
+      <div class="countdown-display" id="countdown"></div>
+      <div class="done-message">
+        <div class="done-text" id="doneText">You Did It!</div>
+        <div class="done-sub" id="doneSub">Thesis Complete</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration via URL parameters:
+    //   ?due=2026-04-09T16:00   ISO date-time of the deadline
+    //   ?title=Senior%20Thesis  Label text
+    //   ?tz=America/New_York    IANA timezone for the deadline
+    //   ?theme=planner          Theme name (planner, classic)
+    //   ?end=You%20Did%20It!    Completion message
+    //   ?endsub=Thesis%20Complete  Completion subtext
+    //   ?confetti=8             Confetti duration in seconds (0 = continuous)
+
+    const params = new URLSearchParams(window.location.search);
+
+    // Default deadline: the 2nd Thursday of April at 16:00 in the target timezone.
+    // Rolls to next year the day after that Thursday, so the page keeps counting
+    // down to a real future date without needing a manual bump each spring.
+    function secondThursdayOfApril(year) {
+      const firstOfApril = new Date(year, 3, 1);
+      const daysUntilThursday = (4 - firstOfApril.getDay() + 7) % 7;
+      return 1 + daysUntilThursday + 7;
+    }
+    function computeDefaultDue() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const today = new Date(y, now.getMonth(), now.getDate());
+      const thisYearThursday = new Date(y, 3, secondThursdayOfApril(y));
+      const useYear = today > thisYearThursday ? y + 1 : y;
+      const day = secondThursdayOfApril(useYear);
+      return `${useYear}-04-${String(day).padStart(2, '0')}T16:00`;
+    }
+
+    // Optional build-time override; the workflow rewrites the empty string when
+    // the COUNTDOWN_DUE repo variable is set.
+    const bakedDue = '';
+
+    const tzName = params.get('tz') || 'America/New_York';
+    const dueParam = params.get('due') || bakedDue || computeDefaultDue();
+    const title = params.get('title') || 'Senior Thesis';
+    const endMessage = params.get('end') || 'You Did It!';
+    const endSub = params.get('endsub') || 'Thesis Complete';
+    const confettiDuration = parseInt(params.get('confetti') || '8', 10);
+
+    // Parse the due date in the specified timezone
+    function parseDueDate(isoStr, tz) {
+      const parts = isoStr.split(/[-T:]/);
+      const year = parseInt(parts[0]);
+      const month = parseInt(parts[1]) - 1;
+      const day = parseInt(parts[2]);
+      const hour = parseInt(parts[3]) || 0;
+      const minute = parseInt(parts[4]) || 0;
+
+      let guess = new Date(Date.UTC(year, month, day, hour, minute, 0));
+
+      for (let i = 0; i < 3; i++) {
+        const inTZ = new Date(guess.toLocaleString('en-US', { timeZone: tz }));
+        const target = new Date(year, month, day, hour, minute, 0);
+        const diff = target - inTZ;
+        guess = new Date(guess.getTime() + diff);
+      }
+
+      return guess;
+    }
+
+    const dueDate = parseDueDate(dueParam, tzName);
+
+    // Set up labels
+    document.getElementById('titleText').textContent = title;
+    document.getElementById('doneText').textContent = endMessage;
+    document.getElementById('doneSub').textContent = endSub;
+    document.getElementById('dueDate').textContent =
+      'Due on ' + dueDate.toLocaleString('en-US', {
+        timeZone: tzName,
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        timeZoneName: 'short',
+      });
+
+    const countdownEl = document.getElementById('countdown');
+    const bannerEl = document.getElementById('banner');
+    let hasCompleted = false;
+
+    function createSegment(value, unit) {
+      return `<div class="countdown-segment">
+        <span class="segment-value">${value}</span>
+        <span class="segment-unit">${unit}</span>
+      </div>`;
+    }
+
+    function updateCountdown() {
+      const now = new Date();
+      let diff = dueDate - now;
+
+      if (diff <= 0 && !hasCompleted) {
+        hasCompleted = true;
+        bannerEl.classList.add('completed');
+        bannerEl.classList.remove('urgent');
+        countdownEl.innerHTML = '';
+        launchConfetti();
+        return;
+      }
+
+      if (hasCompleted) return;
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const totalHours = Math.floor(totalMinutes / 60);
+      const totalDays = Math.floor(totalHours / 24);
+      const totalWeeks = Math.floor(totalDays / 7);
+
+      const seconds = totalSeconds % 60;
+      const minutes = totalMinutes % 60;
+      const hours = totalHours % 24;
+      const days = totalDays % 7;
+      const weeks = totalWeeks;
+
+      let html = '';
+
+      // Adaptive display based on closeness:
+      // > 7 days:    Weeks  Days
+      // 1-7 days:    Days  Hours
+      // 1-24 hours:  Hours  Minutes  Seconds
+      // < 1 hour:    Minutes  Seconds
+
+      if (totalDays > 7) {
+        html += createSegment(weeks, weeks === 1 ? 'week' : 'weeks');
+        html += createSegment(days, days === 1 ? 'day' : 'days');
+        bannerEl.classList.remove('urgent');
+      } else if (totalHours >= 24) {
+        html += createSegment(totalDays, totalDays === 1 ? 'day' : 'days');
+        html += createSegment(hours, hours === 1 ? 'hr' : 'hrs');
+        bannerEl.classList.remove('urgent');
+      } else if (totalMinutes >= 60) {
+        html += createSegment(hours, hours === 1 ? 'hr' : 'hrs');
+        html += createSegment(minutes, minutes === 1 ? 'min' : 'mins');
+        html += createSegment(String(seconds).padStart(2, '0'), 'sec');
+        bannerEl.classList.remove('urgent');
+      } else {
+        html += createSegment(minutes, minutes === 1 ? 'min' : 'mins');
+        html += createSegment(String(seconds).padStart(2, '0'), 'sec');
+        bannerEl.classList.add('urgent');
+      }
+
+      // Only re-render if structure changed (avoid animation reset)
+      const segmentCount = (html.match(/countdown-segment/g) || []).length;
+      const currentCount = countdownEl.querySelectorAll('.countdown-segment').length;
+
+      if (segmentCount !== currentCount) {
+        countdownEl.innerHTML = html;
+      } else {
+        const newDoc = new DOMParser().parseFromString(
+          `<div>${html}</div>`, 'text/html'
+        );
+        const newValues = newDoc.querySelectorAll('.segment-value');
+        const newUnits = newDoc.querySelectorAll('.segment-unit');
+        const curValues = countdownEl.querySelectorAll('.segment-value');
+        const curUnits = countdownEl.querySelectorAll('.segment-unit');
+
+        newValues.forEach((nv, i) => {
+          if (curValues[i] && curValues[i].textContent !== nv.textContent) {
+            curValues[i].textContent = nv.textContent;
+          }
+        });
+        newUnits.forEach((nu, i) => {
+          if (curUnits[i] && curUnits[i].textContent !== nu.textContent) {
+            curUnits[i].textContent = nu.textContent;
+          }
+        });
+      }
+    }
+
+    // Read confetti colors from the theme's CSS custom property
+    function getConfettiColors() {
+      const raw = getComputedStyle(document.documentElement)
+        .getPropertyValue('--confetti-colors').trim();
+      if (raw) {
+        return raw.split(',').map(c => c.trim());
+      }
+      return ['#e77500', '#F7964A', '#121212', '#FFD700', '#C1560E', '#411C02'];
+    }
+
+    // Confetti celebration
+    function launchConfetti() {
+      const continuous = confettiDuration === 0;
+      const durationMs = continuous ? Infinity : confettiDuration * 1000;
+      const end = Date.now() + durationMs;
+      const colors = getConfettiColors();
+
+      function frame() {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0, y: 0.7 },
+          colors: colors,
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1, y: 0.7 },
+          colors: colors,
+        });
+
+        if (continuous || Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }
+
+      // Big initial burst
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { x: 0.5, y: 0.5 },
+        colors: colors,
+        startVelocity: 45,
+        ticks: 300,
+      });
+
+      frame();
+
+      // Additional bursts
+      function scheduleBursts() {
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            spread: 120,
+            origin: { x: 0.3, y: 0.6 },
+            colors: colors,
+          });
+        }, 1500);
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 80,
+            spread: 120,
+            origin: { x: 0.7, y: 0.6 },
+            colors: colors,
+          });
+        }, 3000);
+
+        setTimeout(() => {
+          confetti({
+            particleCount: 100,
+            spread: 160,
+            origin: { x: 0.5, y: 0.5 },
+            colors: colors,
+            startVelocity: 30,
+          });
+        }, 5000);
+      }
+
+      scheduleBursts();
+
+      if (continuous) {
+        setInterval(scheduleBursts, 8000);
+      }
+    }
+
+    // Run immediately, then every second
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
